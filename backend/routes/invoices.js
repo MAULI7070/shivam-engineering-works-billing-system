@@ -68,8 +68,9 @@ router.get('/:id', async (req, res) => {
 
 // ── POST /api/invoices — create invoice + items ─────────────
 router.post('/', async (req, res) => {
-  const client = await db.connect();
+  let client;
   try {
+    client = await db.connect();
     await client.query('BEGIN');
     const {
       invoice_no, invoice_date, transport_mode, vehicle_number,
@@ -155,12 +156,16 @@ router.post('/', async (req, res) => {
     await client.query('COMMIT');
     res.status(201).json({ success: true, data: { ...invResult.rows[0], items } });
   } catch (err) {
-    await client.query('ROLLBACK');
+    if (client) await client.query('ROLLBACK').catch(() => {});
     if (err.code === '23505')
       return res.status(409).json({ success: false, error: 'Invoice number already exists' });
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Invoice creation failed:', err.message);
+    res.status(503).json({
+      success: false,
+      error: 'Database unavailable. Configure DATABASE_URL or the DB_* environment variables.',
+    });
   } finally {
-    client.release();
+    if (client) client.release();
   }
 });
 
