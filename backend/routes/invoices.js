@@ -40,7 +40,11 @@ router.get('/', async (_req, res) => {
     );
     res.json({ success: true, data: result.rows });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Invoice list failed:', err.message);
+    res.status(503).json({
+      success: false,
+      error: 'Database unavailable. Configure DATABASE_URL or the DB_* environment variables.',
+    });
   }
 });
 
