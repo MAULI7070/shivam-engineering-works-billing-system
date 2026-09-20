@@ -3,5 +3,6 @@ backend/.env
 frontend/.env
 dist/
 frontend/dist/
+frontend/.vite/
 *.log
 .DS_Store
