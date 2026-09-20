@@ -8,7 +8,7 @@ const calculationsRouter = require('./routes/calculations');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
-const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+const frontendDist = path.join(__dirname, 'public');
 
 // ── Middleware ──────────────────────────────────────────────
 app.use(cors({ origin: '*' }));
